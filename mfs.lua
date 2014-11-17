@@ -129,7 +129,7 @@ end
 
 local function m2x(mfs, xlsx)
 	assert(mfs, "Need mfs filename")
-	xlsx = xlsx or filename:match("(.*%.)mfs$") .. "xlsx"
+	xlsx = xlsx or mfs:match("(.*%.)mfs$") .. "xlsx"
 	assert(xlsx, "Need xlsx filename")
 
 	local source = assert(io.open(mfs, "rb") ,"Can't open " .. mfs)
