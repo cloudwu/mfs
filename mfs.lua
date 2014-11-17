@@ -153,6 +153,7 @@ local function log(...)
 end
 
 local function monitor(name)
+	local winapi = require "winapi"
 	local ti = winapi.LastWriteTime(name)
 	coroutine.yield(ti)
 	while true do
