@@ -44,23 +44,51 @@ local function x2m(filename, mfs)
 
 	local xml_remove = {}
 	for _, v in ipairs { "bookViews" , "sheetViews" } do
-		xml_remove["<"..v..">"] = "</"..v..">"
+		xml_remove["<"..v] = "</"..v..">"
 	end
+
+	local xml_sort = {}
+	for _, v in ipairs { "numFmts" , "Relationships", "cellStyles" } do
+		xml_sort["<"..v] = "</"..v..">"
+	end
+
 
 	local function xml_filter(s)
 		local closetag
+		local filter_type
+		local from
 		for i, line in ipairs(s) do
 			if line:find "^<dcterms:modified" then
 				s[i] = ""
 			elseif closetag then
-				s[i] = ""
+				if filter_type == "REMOVE" then
+					s[i] = ""
+				end
 				if line == closetag then
+					if filter_type == "SORT" then
+						if from+1 < i-1 then
+							local tmp = { table.unpack(s, from+1, i-1) }
+							table.sort(tmp)
+							for j = from+1, i-1 do
+								s[j] = tmp[j-from]
+							end
+						end
+					end
 					closetag = nil
+					filter_type = nil
 				end
 			else
+				line = line:match "^(<%w+)"
 				closetag = xml_remove[line]
 				if closetag then
+					filter_type = "REMOVE"
 					s[i] = ""
+				else
+					closetag = xml_sort[line]
+					if closetag then
+						filter_type = "SORT"
+						from = i
+					end
 				end
 			end
 		end
