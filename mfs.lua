@@ -1,5 +1,6 @@
 local zip = require "zip"
 local base64 = require "base64"
+local xlsx = require "xlsxobj"
 
 local function alert(err)
 	local ok, winapi = pcall(require, "winapi")
@@ -27,6 +28,16 @@ local function x2m(filename, mfs)
 
 	local function is_xml(filename)
 		return xml_ext[filename:match("%.(%a+)$")]
+	end
+
+	local com_ext = {}
+
+	for _,v in ipairs { "bin" } do
+		com_ext[v] = true
+	end
+
+	local function is_com(filename)
+		return com_ext[filename:match("%.(%a+)$")]
 	end
 
 	local function xml_split(s)
@@ -115,6 +126,9 @@ local function x2m(filename, mfs)
 				end
 			end
 		else
+			if is_com(filename) then
+				blob = xlsx.bin(blob) or blob
+			end
 			output:write("+" .. filename .. "\n")
 			output:write(base64.encode(blob))
 			output:write("\n")

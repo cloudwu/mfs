@@ -24,7 +24,7 @@ minizip/zip.c
 
 CFLAGS = -O2 -Wall
 
-all : zip.dll base64.dll winapi.dll
+all : zip.dll base64.dll winapi.dll xlsxobj.dll
 
 zip.dll : luazip.c $(ZLIB) $(MINIZIP)
 	gcc $(CFLAGS) --shared -o $@ $^ -Izlib -Iminizip -I/usr/local/include -L/usr/local/bin -llua52
@@ -35,5 +35,8 @@ base64.dll : lbase64.c
 winapi.dll : winapi.c
 	gcc $(CFLAGS) --shared -o $@ $^ -I/usr/local/include -L/usr/local/bin -llua52 -luser32 -lole32
 
+xlsxobj.dll : lxlsxobj.c
+	gcc $(CFLAGS) --shared -o $@ $^ -I/usr/local/include -L/usr/local/bin -llua52
+
 clean :
-	rm zip.dll base64.dll winapi.dll
+	rm zip.dll base64.dll winapi.dll xlsxobj.dll
